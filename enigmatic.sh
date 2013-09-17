@@ -4,14 +4,15 @@ pushd `dirname $0` > /dev/null
 MY_PATH=`pwd`
 popd > /dev/null
 
-WATCH_DIR=$1
+WATCH_DIR=`realpath $1`
+STAGE_DIR=`realpath $2`
 
 echo $MY_PATH
 echo $WATCH_DIR
 
 
 
-if [ `which inotifywait` == ""]; then
+if [ -z "`which inotifywait`" ] ; then
 	echo "Please install inotify-tools"
 	echo ""
 	echo "For my Debian/Ubuntu friends"
@@ -23,4 +24,4 @@ if [ `which inotifywait` == ""]; then
 	exit
 fi
 
-inotifywait -mr -e modify -e create | $MY_PATH/processor.sh
+inotifywait -mr -e modify -e moved_to -e create $WATCH_DIR | $MY_PATH/processor.sh $WATCH_DIR $STAGE_DIR
